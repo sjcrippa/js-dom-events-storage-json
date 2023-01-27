@@ -73,6 +73,8 @@ function recuperarUsuario(storage){
     return usuarioEnStorage;
 };
 
+// Funcion de bienvenida. 
+
 function saludar(usuario){
     nombreUsuario.innerHTML = `Bienvenido/a, <span>${usuario.name}</span>`
 };
@@ -126,10 +128,48 @@ function validarUsuario(usersDB,user,pass){
 // Ahora agregamos el evento al boton de login
 
 btnLogin.addEventListener("click",(e)=>{
-    e.preventDefault(); // esto para que no se cierre ni se recarge la pagina, para que el boton no se comporte por defecto.
+    e.preventDefault(); // esto para que no se cierre ni se recarge la pagina, el boton no se comporte por defecto.
     if(!mailLogin.value||!passLogin.value){
         alert("Todos los campos son requeridos");
     }else{
-        let data = validarUsuario(usuario, mailLogin.value, passLogin.value)
+        let data = validarUsuario(usuarios, mailLogin.value, passLogin.value)
+        if(!data){
+            alert("Usuario y/o contraseña erróneos")
+        }else{
+            if(recordar.checked){
+                guardarDatos(data, localStorage);
+                saludar(recuperarUsuario(localStorage));
+            }else{
+                guardarDatos(data, sessionStorage);
+                saludar(recuperarUsuario(sessionStorage));
+            }
+            // Recien ahora cierro el cuadro de Login
+            modal.hide();
+            // Muestro info para usuarios logueados
+            mostrarInformacion(mascotas);
+            presentarInfo(toggles, "d-none");
+        };
     }
-})
+
+    
+});
+
+// Boton logout
+
+btnLogout.addEventListener("click", () => {
+    borrarDatos();
+    presentarInfo(toggles, "d-none");
+});
+
+// Funcion esta logueado
+
+function estaLogueado(usuario){
+
+    if(usuario){
+        saludar(usuario);
+        mostrarInformacion(mascotas)
+        presentarInfo(toggles, "d-none");
+    };
+};
+
+estaLogueado(recuperarUsuario(localStorage))
